@@ -1,3 +1,5 @@
+#!/usr/bin/perl
+
 # Copyright (c) 2014, CableLabs, Inc.
 # All rights reserved.
 #
@@ -25,7 +27,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-#!/usr/bin/perl
 package SocketCalls;
 
 use utils::SoapHeaders qw( );

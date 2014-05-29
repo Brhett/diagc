@@ -1,3 +1,5 @@
+#!/usr/bin/perl
+
 # Copyright (c) 2014, CableLabs, Inc.
 # All rights reserved.
 #
