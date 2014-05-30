@@ -31,12 +31,25 @@ package ResponseValidator;
 
 sub valiate_soap_response {
     my $soap_response = $_[0];
-    #if($soap_response->code == 200) {
-        print $soap_response->as_string;
-    #}
-    #else {
-    #    print $soap_response->as_string;
-    #}
+
+    if($soap_response->is_success) {
+		print "************Success*************\n";
+        print_message ($soap_response);
+    } else {
+		print "************Error*************\n";
+		print_message ($soap_response);
+	}
+	print "\n************End of Action*************\n";
+}
+
+sub print_message {
+        print "Response status : \n";
+        print "-----------------\n";
+        print $_[0]->status_line . "\n";
+        print "\n";
+        print "Response Body: \n";
+        print "--------------\n";
+        print $_[0]->content . "\n";
 }
 
 1;

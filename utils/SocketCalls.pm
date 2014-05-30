@@ -39,7 +39,7 @@ sub invoke_soap_request {
     #print "Request Message : " . $_[2] . "\n";
     #print "Soap Action :".$_[3] . "\n";
     my $post_url = $SoapHeaders::http_prefix . $_[0] . $SoapHeaders::separator . $_[1] . $SoapHeaders::control_url;
-    print $post_url;
+    #print $post_url;
     my $user_agent = LWP::UserAgent->new();
     my $soap_request = HTTP::Request->new(POST => $post_url);
     $soap_request->header(SOAPAction => $_[3]);

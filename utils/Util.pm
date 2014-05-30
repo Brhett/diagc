@@ -61,6 +61,7 @@ sub get_user_input {
     print "Enter the DIAGE host Port Number : ";
     our $PORT = <>;
     chomp $PORT;
+    print "\n";
     return ($USR_OPT, $IP, $PORT);
 }
 
