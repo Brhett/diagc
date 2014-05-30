@@ -36,7 +36,7 @@ use utils::Util;
 use utils::SocketCalls;
 use include::ActionRequestInclude;
 use include::ActionResponseInclude;
-use ResponseValidator;
+use responsevalidator::ResponseValidator;
 
 while (1) {
 Util::print_diagc_start;
