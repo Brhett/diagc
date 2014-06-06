@@ -49,9 +49,9 @@ our $traceroute_request_message2="</Host>
 sub traceroute_request {
  my $host_value = "";
  if ($_[2] eq '') {
-	 $host_value = $host_value . $host_ping;
+     $host_value = $host_value . $host_ping;
  } else {
-	 $host_value = $host_value . $_[2];
+     $host_value = $host_value . $_[2];
  }
  return SocketCalls::invoke_soap_request($_[0], $_[1], $traceroute_request_message1 . $host_value . $traceroute_request_message2, $traceroute_action);
 }

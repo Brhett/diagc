@@ -52,7 +52,7 @@ sub get_user_options {
     print "Input the number corresponding to the action to be invoked : ";
     our $USR_OPT = <>;
     chomp $USR_OPT;
-	return $USR_OPT;
+    return $USR_OPT;
 }
 
 sub get_manual_device_details {

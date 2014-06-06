@@ -31,32 +31,32 @@ my @device_port=();
 my ($reader_input, $reader_output, $ssdp_res_msg) = '';
 vec($reader_input, fileno(SSDP_SOCK), 1) = 1;
 while( select($reader_output = $reader_input, undef, undef, 10) ) {
-		recv(SSDP_SOCK, $ssdp_response, 4096, 0);
-		print $ssdp_response . "\n";
+        recv(SSDP_SOCK, $ssdp_response, 4096, 0);
+        print $ssdp_response . "\n";
 
-		unless ($ssdp_response =~ m/LOCATION[ :]+(.*)\r/i) {
-				next;
-		}
-		my $location = $1;
-		unless ($location =~ m/http:\/\/([0-9a-z.]+)[:]*([0-9]*)\/(.*)/i) {
-				next;
-		}
-		my $host_address = $1;
-		my $host_port = $2;
-		my $dev_path = '/' . $3;
-		 
-		my $http_request = Net::UPnP::HTTP->new();
-		my $post_response = $http_request->post($host_address, $host_port, "GET", $dev_path, "", "");
+        unless ($ssdp_response =~ m/LOCATION[ :]+(.*)\r/i) {
+                next;
+        }
+        my $location = $1;
+        unless ($location =~ m/http:\/\/([0-9a-z.]+)[:]*([0-9]*)\/(.*)/i) {
+                next;
+        }
+        my $host_address = $1;
+        my $host_port = $2;
+        my $dev_path = '/' . $3;
+         
+        my $http_request = Net::UPnP::HTTP->new();
+        my $post_response = $http_request->post($host_address, $host_port, "GET", $dev_path, "", "");
 
-		my $post_content = $post_response->getcontent();
+        my $post_content = $post_response->getcontent();
 
-		my $dev = Net::UPnP::Device->new();
-		$dev->setssdp($ssdp_response);
-		$dev->setdescription($post_content);
+        my $dev = Net::UPnP::Device->new();
+        $dev->setssdp($ssdp_response);
+        $dev->setdescription($post_content);
 
-		push(@device_list, $dev);
-		push(@device_addr,$host_address);
-		push(@device_port,$host_port);
+        push(@device_list, $dev);
+        push(@device_addr,$host_address);
+        push(@device_port,$host_port);
 }
 close(SSDP_SOCK);
 

@@ -33,13 +33,13 @@ sub valiate_soap_response {
     my $soap_response = $_[0];
 
     if($soap_response->is_success) {
-		print "************Success*************\n";
+        print "************Success*************\n";
         print_message ($soap_response);
     } else {
-		print "************Error*************\n";
-		print_message ($soap_response);
-	}
-	print "\n************End of Action*************\n";
+        print "************Error*************\n";
+        print_message ($soap_response);
+    }
+    print "\n************End of Action*************\n";
 }
 
 sub print_message {
