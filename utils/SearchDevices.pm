@@ -26,44 +26,38 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+#
+package SearchDevices;
 
-package Util;
-use strict;
+use utils::UPnPWrapper;
+use Net::UPnP::Device;
+use Net::UPnP::ControlPoint;
 
-sub print_diagc_start {
-    print "\n\nDIAGC - Utility Client\n";
-    print " ---------------------\n";
-    print "1. GetDeviceStatus \n";
-    print "2. CancelTest \n";
-    print "3. GetActiveTestIDs \n";
-    print "4. NSLookup \n";
-    print "5. Ping \n";
-    print "6. Traceroute \n";
-    print "7. GetTestIDs\n";
-    print "8. GetTestInfo\n";
-    print "9. GetNSLookupResult \n";
-    print "10. GetPingResult \n";
-    print "11. GetTracerouteResult \n";
-    print "x - Exit application \n";
-    print " ---------------------\n";
+sub search_devices {
+	my ($devices, $ip, $port) = UPnPWrapper::search();
+	print "Total Devices found on network : " .@$devices . "\n";
+    return ($devices, $ip, $port);
 }
 
-sub get_user_options {
-    print "Input the number corresponding to the action to be invoked : ";
-    our $USR_OPT = <>;
-    chomp $USR_OPT;
-	return $USR_OPT;
-}
-
-sub get_manual_device_details {
-    print "Enter the DIAGE host IPAddress : " ;
-    our $IP = <>;
-    chomp $IP;
-    print "Enter the DIAGE host Port Number : ";
-    our $PORT = <>;
-    chomp $PORT;
-    print "\n";
-    return ($IP, $PORT);
+sub lookup_diage_device {
+	my ($device_list_search, $device_ip_list, $device_port_list) = search_devices;
+	$devNum= 0;
+	my (@temp_device_list, @temp_device_ip, @temp_device_port)= ();
+	foreach my $dev_temp (@$device_list_search) {
+		unless ($dev_temp->getservicebyname('urn:schemas-upnp-org:service:BasicManagement:2')) {
+			$devNum++;
+            next;
+        }
+        push (@temp_device_list , $dev_temp);
+        push (@temp_device_ip, @$device_ip_list[$devNum]);
+        push (@temp_device_port, @$device_port_list[$devNum]);
+#		print "[" . ($devNum + 1) . "] : " . $dev_temp->getfriendlyname() . "\n";
+#		print "Device IP : " . @$device_ip_list[$devNum] . "\n";
+#		print "Device Port : " . @$device_port_list[$devNum] . "\n";
+		$devNum++;
+	}
+	print "Devices with DIAGE capability: " . @temp_device_list . "\n";
+	return (\@temp_device_list, \@temp_device_ip, \@temp_device_port);
 }
 
 1;

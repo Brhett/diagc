@@ -1,3 +1,5 @@
+#!/bin/usr/perl
+
 # Copyright (c) 2014, CableLabs, Inc.
 # All rights reserved.
 #
@@ -25,7 +27,7 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-#!/bin/usr/perl
+
 package ActionRequestInclude;
 use requestaction::DeviceStatusRequest;
 use requestaction::CancelTestRequest;

@@ -36,13 +36,62 @@ use utils::Util;
 use utils::SocketCalls;
 use include::ActionRequestInclude;
 use include::ActionResponseInclude;
+use include::UPnPInclude;
 use responsevalidator::ResponseValidator;
 
-while (1) {
-Util::print_diagc_start;
-our ($OPTION, $HOSTIP, $HOSTPORT) = Util::get_user_input;
+our ($TEST_OPTION, $HOSTIP, $HOSTPORT) = '';
 
-    switch($OPTION){
+print "------- Choose an option -------\n";
+print "1. Search DIAGE capable devices \n";
+print "2. Manual DIAGE device testing \n";
+print "3. Enter x to exit \n";
+print "Enter the option number : ";
+our $SEARCH_OPTS = <>;
+chomp $SEARCH_OPTS;
+
+switch($SEARCH_OPTS){
+       case 1          { 
+                        my ($diage_devices, $diage_ip, $diage_port) = SearchDevices::lookup_diage_device;
+                        print "Choose the corresponding device number to start testing: :\n";
+
+                        my $diage_dev_count=0;
+                        print "****************************************\n";
+                        print "****************************************\n";
+                        foreach my $diage_temp (@$diage_devices) {
+                            print "----------------------------------------\n";
+                            print "[" . ($diage_dev_count + 1) . "] : " . $diage_temp->getfriendlyname() . "\n";
+                            print "Device IP : " . @$diage_ip[$diage_dev_count] . "\n";
+                            print "Device Port : " . @$diage_port[$diage_dev_count] . "\n";
+                            $diage_dev_count++;
+                        }
+                        print "****************************************\n";
+                        print "****************************************\n";
+
+                        print "Choose the device number: ";
+                        my $DEVICE_NO = <>;
+                        chomp $DEVICE_NO;
+                        $HOSTIP = @$diage_ip[$DEVICE_NO - 1];
+                        $HOSTPORT = @$diage_port[$DEVICE_NO - 1];
+
+                        Util::print_diagc_start;
+                       }
+       case 2          {
+                        Util::print_diagc_start;
+                       }                       
+       case ('x')      {
+                        exit;
+                       }
+       else            { exit;}  
+       
+}
+
+while (1) {
+    $TEST_OPTION = Util::get_user_options;
+    if ($SEARCH_OPTS eq '2') {
+      ($HOSTIP, $HOSTPORT) = Util::get_manual_device_details;
+    }
+
+    switch($TEST_OPTION){
        case 1          {
                         my $devicestatus_response = DeviceStatusRequest::devicestatus_request($HOSTIP, $HOSTPORT);
                         ResponseValidator::valiate_soap_response($devicestatus_response);
@@ -112,6 +161,9 @@ our ($OPTION, $HOSTIP, $HOSTPORT) = Util::get_user_input;
                         ResponseValidator::valiate_soap_response($traceroute_res_response);
                        }
        case ('x')      { exit; }
+       else            { exit; }
     }
+    Util::print_diagc_start;
 }
+
 1;
