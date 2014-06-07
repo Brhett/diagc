@@ -39,46 +39,50 @@ use include::ActionResponseInclude;
 use include::UPnPInclude;
 use responsevalidator::ResponseValidator;
 
+START:
+
 our ($TEST_OPTION, $HOSTIP, $HOSTPORT) = '';
 
 print "------- Choose an option -------\n";
 print "1. Search DIAGE capable devices \n";
 print "2. Manual DIAGE device testing \n";
-print "3. Enter x to exit \n";
+print "3. Exit Application \n";
 print "Enter the option number : ";
 our $SEARCH_OPTS = <>;
 chomp $SEARCH_OPTS;
 
 switch($SEARCH_OPTS){
-       case 1          { 
+       case 1          {
                         my ($diage_devices, $diage_ip, $diage_port) = SearchDevices::lookup_diage_device;
                         print "Choose the corresponding device number to start testing: :\n";
 
-                        my $diage_dev_count=0;
+                        my $device_count=0;
                         print "****************************************\n";
                         print "****************************************\n";
-                        foreach my $diage_temp (@$diage_devices) {
+
+                        foreach my $device_temp (@$diage_devices) {
                             print "----------------------------------------\n";
-                            print "[" . ($diage_dev_count + 1) . "] : " . $diage_temp->getfriendlyname() . "\n";
-                            print "Device IP : " . @$diage_ip[$diage_dev_count] . "\n";
-                            print "Device Port : " . @$diage_port[$diage_dev_count] . "\n";
-                            $diage_dev_count++;
+                            print "[" . ($device_count + 1) . "] : " . $device_temp->getfriendlyname() . "\n";
+                            print "Device IP : " . @$diage_ip[$device_count] . "\n";
+                            print "Device Port : " . @$diage_port[$device_count] . "\n";
+                            $device_count++;
                         }
+
                         print "****************************************\n";
                         print "****************************************\n";
 
                         print "Choose the device number: ";
                         my $DEVICE_NO = <>;
                         chomp $DEVICE_NO;
+
                         $HOSTIP = @$diage_ip[$DEVICE_NO - 1];
                         $HOSTPORT = @$diage_port[$DEVICE_NO - 1];
-
                         Util::print_diagc_start;
                        }
        case 2          {
                         Util::print_diagc_start;
                        }                       
-       case ('x')      {
+       case 3          {
                         exit;
                        }
        else            { exit;}  
@@ -86,6 +90,7 @@ switch($SEARCH_OPTS){
 }
 
 while (1) {
+GET_USER_OPT:
     $TEST_OPTION = Util::get_user_options;
     if ($SEARCH_OPTS eq '2') {
       ($HOSTIP, $HOSTPORT) = Util::get_manual_device_details;
@@ -160,8 +165,8 @@ while (1) {
                         my $traceroute_res_response = TracerouteResponse::traceroute_response($HOSTIP, $HOSTPORT, $TESTID_INFO);
                         ResponseValidator::valiate_soap_response($traceroute_res_response);
                        }
-       case ('x')      { exit; }
-       else            { exit; }
+       case ('x')      { goto START; }
+       else            { goto GET_USER_OPT; }
     }
     Util::print_diagc_start;
 }

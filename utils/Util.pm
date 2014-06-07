@@ -44,7 +44,7 @@ sub print_diagc_start {
     print "9. GetNSLookupResult \n";
     print "10. GetPingResult \n";
     print "11. GetTracerouteResult \n";
-    print "x - Exit application \n";
+    print "x - Exit to main menu \n";
     print " ---------------------\n";
 }
 

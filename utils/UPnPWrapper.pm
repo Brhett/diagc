@@ -27,6 +27,7 @@ send(SSDP_SOCK, $ssdp_header, 0, $ssdp_multicast_msg);
 my @device_list=();
 my @device_addr=();
 my @device_port=();
+my $ssdp_response = '';
 
 my ($reader_input, $reader_output, $ssdp_res_msg) = '';
 vec($reader_input, fileno(SSDP_SOCK), 1) = 1;
