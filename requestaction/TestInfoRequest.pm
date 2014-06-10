@@ -42,5 +42,5 @@ our $testinfo_request_message2="</TestID>
 </s:Envelope>";
 
 sub testinfo_request {
- return SocketCalls::invoke_soap_request($_[0], $_[1], $testinfo_request_message1 . $_[2] . $testinfo_request_message2, $testinfo_action);
+ return SocketCalls::invoke_soap_request($_[0], $_[1], $testinfo_request_message1 . $_[2] . $testinfo_request_message2, $testinfo_action,$_[3]);
 }

@@ -42,5 +42,5 @@ our $nslookup_response_message2="</TestID>
 </s:Envelope>";
 
 sub nslookup_response {
- return SocketCalls::invoke_soap_request($_[0], $_[1], $nslookup_response_message1 . $_[2] . $nslookup_response_message2, $nslookup_response_action);
+ return SocketCalls::invoke_soap_request($_[0], $_[1], $nslookup_response_message1 . $_[2] . $nslookup_response_message2, $nslookup_response_action, $_[3]);
 }

@@ -42,7 +42,7 @@ our $ping_response_message2="</TestID>
 </s:Envelope>";
 
 sub ping_response {
- return SocketCalls::invoke_soap_request($_[0], $_[1], $ping_response_message1 . $_[2] . $ping_response_message2, $ping_response_action);
+ return SocketCalls::invoke_soap_request($_[0], $_[1], $ping_response_message1 . $_[2] . $ping_response_message2, $ping_response_action, $_[3]);
 }
 
 1;

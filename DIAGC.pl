@@ -41,42 +41,44 @@ use responsevalidator::ResponseValidator;
 
 START:
 
-our ($TEST_OPTION, $HOSTIP, $HOSTPORT) = '';
+our ($TEST_OPTION, $HOSTIP, $HOSTPORT, $CONTROL_URL) = '';
 
-print "------- Choose an option -------\n";
+print "\33[1;33m------- Choose an option -------\33[m\n";
 print "1. Search DIAGE capable devices \n";
 print "2. Manual DIAGE device testing \n";
 print "3. Exit Application \n";
-print "Enter the option number : ";
+print "\33[1;33mEnter the option number : \33[m";
 our $SEARCH_OPTS = <>;
 chomp $SEARCH_OPTS;
 
 switch($SEARCH_OPTS){
        case 1          {
-                        my ($diage_devices, $diage_ip, $diage_port) = SearchDevices::lookup_diage_device;
-                        print "Choose the corresponding device number to start testing: :\n";
+                        my ($diage_devices, $diage_ip, $diage_port, $control_url) = SearchDevices::lookup_diage_device;
+                        print "\33[1;33mChoose the corresponding device number to start testing: \33[m\n";
 
                         my $device_count=0;
                         print "****************************************\n";
                         print "****************************************\n";
 
                         foreach my $device_temp (@$diage_devices) {
-                            print "----------------------------------------\n";
-                            print "[" . ($device_count + 1) . "] : " . $device_temp->getfriendlyname() . "\n";
-                            print "Device IP : " . @$diage_ip[$device_count] . "\n";
-                            print "Device Port : " . @$diage_port[$device_count] . "\n";
+                            print "----------------------------------------\33[m\n";
+                            print "\33[1;33m[" . ($device_count + 1) . "] : " . $device_temp->getfriendlyname() . "\33[m\n";
+                            print "\33[1;33mDevice IP : " . @$diage_ip[$device_count] . "\33[m\n";
+                            print "\33[1;33mDevice Port : " . @$diage_port[$device_count] . "\33[m\n";
+                            print "\33[1;33mControl URL : " . @$control_url[$device_count] . "\33[m\n";
                             $device_count++;
                         }
 
                         print "****************************************\n";
                         print "****************************************\n";
 
-                        print "Choose the device number: ";
+                        print "\33[1;33mChoose the device number: \33[m";
                         my $DEVICE_NO = <>;
                         chomp $DEVICE_NO;
 
                         $HOSTIP = @$diage_ip[$DEVICE_NO - 1];
                         $HOSTPORT = @$diage_port[$DEVICE_NO - 1];
+                        $CONTROL_URL = @$control_url[$DEVICE_NO - 1];
                         Util::print_diagc_start;
                        }
        case 2          {
@@ -93,76 +95,76 @@ while (1) {
 GET_USER_OPT:
     $TEST_OPTION = Util::get_user_options;
     if ($SEARCH_OPTS eq '2') {
-      ($HOSTIP, $HOSTPORT) = Util::get_manual_device_details;
+      ($HOSTIP, $HOSTPORT, $CONTROL_URL) = Util::get_manual_device_details;
     }
 
     switch($TEST_OPTION){
        case 1          {
-                        my $devicestatus_response = DeviceStatusRequest::devicestatus_request($HOSTIP, $HOSTPORT);
+                        my $devicestatus_response = DeviceStatusRequest::devicestatus_request($HOSTIP, $HOSTPORT, $CONTROL_URL);
                         ResponseValidator::valiate_soap_response($devicestatus_response);
                        }
        case 2          {
                         print "Enter the Test number for CancelTest : ";
                         my $TESTID = <>;
                         chomp $TESTID;
-                        my $canceltest_response = CancelTestRequest::canceltest_request($HOSTIP, $HOSTPORT, $TESTID);
+                        my $canceltest_response = CancelTestRequest::canceltest_request($HOSTIP, $HOSTPORT, $TESTID, $CONTROL_URL);
                         ResponseValidator::valiate_soap_response($canceltest_response);
                        }
        case 3          {
-                        my $activetestids_response = GetActiveTestIDsRequest::activetestids_request($HOSTIP, $HOSTPORT);
+                        my $activetestids_response = GetActiveTestIDsRequest::activetestids_request($HOSTIP, $HOSTPORT, $CONTROL_URL);
                         ResponseValidator::valiate_soap_response($activetestids_response);
                        }
        case 4          {
                         print "Enter the HostName to perform NSLookup : ";
                         my $HOST_NAME = <>;
                         chomp $HOST_NAME;
-                        my $nslookup_req_response = NSLookUpRequest::nslookup_request($HOSTIP, $HOSTPORT, $HOST_NAME);
+                        my $nslookup_req_response = NSLookUpRequest::nslookup_request($HOSTIP, $HOSTPORT, $HOST_NAME, $CONTROL_URL);
                         ResponseValidator::valiate_soap_response($nslookup_req_response);
                        }
        case 5          {
                         print "Enter the HostName to perform Ping : ";
                         my $HOST_NAME = <>;
                         chomp $HOST_NAME;
-                        my $ping_req_response = PingRequest::ping_request($HOSTIP, $HOSTPORT, $HOST_NAME);
+                        my $ping_req_response = PingRequest::ping_request($HOSTIP, $HOSTPORT, $HOST_NAME, $CONTROL_URL);
                         ResponseValidator::valiate_soap_response($ping_req_response);
                        }
        case 6          {
                         print "Enter the HostName to perform traceroute : ";
                         my $HOST_NAME = <>;
                         chomp $HOST_NAME;
-                        my $traceroute_req_request = TracerouteRequest::traceroute_request($HOSTIP, $HOSTPORT, $HOST_NAME);
+                        my $traceroute_req_request = TracerouteRequest::traceroute_request($HOSTIP, $HOSTPORT, $HOST_NAME, $CONTROL_URL);
                         ResponseValidator::valiate_soap_response($traceroute_req_request);
                        }
        case 7          {
-                        my $testidsreq_response = TestIDsRequest::testids_request($HOSTIP, $HOSTPORT);
+                        my $testidsreq_response = TestIDsRequest::testids_request($HOSTIP, $HOSTPORT, $CONTROL_URL);
                         ResponseValidator::valiate_soap_response($testidsreq_response);
                        }
        case 8          {
                         print "Enter the Test number for TestInfo : ";
                         my $TESTID_INFO = <>;
                         chomp $TESTID_INFO;
-                        my $testinfo_response = TestInfoRequest::testinfo_request($HOSTIP, $HOSTPORT, $TESTID_INFO);
+                        my $testinfo_response = TestInfoRequest::testinfo_request($HOSTIP, $HOSTPORT, $TESTID_INFO, $CONTROL_URL);
                         ResponseValidator::valiate_soap_response($testinfo_response);
                        }
        case 9          {
                         print "Enter the Test number for GetNSLookupResult : ";
                         my $TESTID_INFO = <>;
                         chomp $TESTID_INFO;
-                        my $nslookup_res_response = NSLookUpResponse::nslookup_response($HOSTIP, $HOSTPORT, $TESTID_INFO);
+                        my $nslookup_res_response = NSLookUpResponse::nslookup_response($HOSTIP, $HOSTPORT, $TESTID_INFO, $CONTROL_URL);
                         ResponseValidator::valiate_soap_response($nslookup_res_response);
                        }
        case 10         {
                         print "Enter the Test number for GetPingResult : ";
                         my $TESTID_INFO = <>;
                         chomp $TESTID_INFO;
-                        my $ping_res_response = PingResponse::ping_response($HOSTIP, $HOSTPORT, $TESTID_INFO);
+                        my $ping_res_response = PingResponse::ping_response($HOSTIP, $HOSTPORT, $TESTID_INFO, $CONTROL_URL);
                         ResponseValidator::valiate_soap_response($ping_res_response);
                        }
        case 11         {
                         print "Enter the Test number for GetTracerouteResult : ";
                         my $TESTID_INFO = <>;
                         chomp $TESTID_INFO;
-                        my $traceroute_res_response = TracerouteResponse::traceroute_response($HOSTIP, $HOSTPORT, $TESTID_INFO);
+                        my $traceroute_res_response = TracerouteResponse::traceroute_response($HOSTIP, $HOSTPORT, $TESTID_INFO, $CONTROL_URL);
                         ResponseValidator::valiate_soap_response($traceroute_res_response);
                        }
        case ('x')      { goto START; }

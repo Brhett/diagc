@@ -42,5 +42,5 @@ our $canceltest_request_message2="</TestID>
 </s:Envelope>";
 
 sub canceltest_request {
- return SocketCalls::invoke_soap_request($_[0], $_[1], $canceltest_request_message1 . $_[2] . $canceltest_request_message2, $canceltest_action);
+ return SocketCalls::invoke_soap_request($_[0], $_[1], $canceltest_request_message1 . $_[2] . $canceltest_request_message2, $canceltest_action, $_[3]);
 }

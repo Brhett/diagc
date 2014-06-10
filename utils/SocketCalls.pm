@@ -38,7 +38,7 @@ sub invoke_soap_request {
     #print "The passed port no :" . $_[1] . "\n";
     #print "Request Message : " . $_[2] . "\n";
     #print "Soap Action :".$_[3] . "\n";
-    my $post_url = $SoapHeaders::http_prefix . $_[0] . $SoapHeaders::separator . $_[1] . $SoapHeaders::control_url;
+    my $post_url = $SoapHeaders::http_prefix . $_[0] . $SoapHeaders::separator . $_[1] . $_[4];
     #print $post_url;
     my $user_agent = LWP::UserAgent->new();
     my $soap_request = HTTP::Request->new(POST => $post_url);

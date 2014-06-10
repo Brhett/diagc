@@ -39,5 +39,5 @@ our $devicestatus_request_message = "<?xml version=\"1.0\" encoding=\"utf-8\"?>
 </s:Envelope>";
 
 sub devicestatus_request {
- return SocketCalls::invoke_soap_request($_[0], $_[1], $devicestatus_request_message,$devicestatus_action);
+ return SocketCalls::invoke_soap_request($_[0], $_[1], $devicestatus_request_message,$devicestatus_action,$_[2]);
 }

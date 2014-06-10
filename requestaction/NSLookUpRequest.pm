@@ -52,5 +52,5 @@ sub nslookup_request {
  } else {
      $host_value = $host_value . $_[2];
  }
- return SocketCalls::invoke_soap_request($_[0], $_[1], $nslookup_request_message1 . $host_value . $nslookup_request_message2, $nslookup_action);
+ return SocketCalls::invoke_soap_request($_[0], $_[1], $nslookup_request_message1 . $host_value . $nslookup_request_message2, $nslookup_action, $_[3]);
 }

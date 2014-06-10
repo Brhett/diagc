@@ -63,7 +63,11 @@ sub get_manual_device_details {
     our $PORT = <>;
     chomp $PORT;
     print "\n";
-    return ($IP, $PORT);
+    print "Enter the DIAGE Control URL : ";
+    our $CONTROL_URL = <>;
+    chomp $CONTROL_URL;
+    print "\n";
+    return ($IP, $PORT, $CONTROL_URL);
 }
 
 1;

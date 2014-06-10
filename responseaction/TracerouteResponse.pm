@@ -42,5 +42,5 @@ our $traceroute_response_message2="</TestID>
 </s:Envelope>";
 
 sub traceroute_response {
- return SocketCalls::invoke_soap_request($_[0], $_[1], $traceroute_response_message1 . $_[2] . $traceroute_response_message2, $traceroute_response_action);
+ return SocketCalls::invoke_soap_request($_[0], $_[1], $traceroute_response_message1 . $_[2] . $traceroute_response_message2, $traceroute_response_action, $_[3]);
 }

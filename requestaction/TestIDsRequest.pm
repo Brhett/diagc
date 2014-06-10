@@ -39,5 +39,5 @@ our $testids_request_message = "<?xml version=\"1.0\" encoding=\"utf-8\"?>
 </s:Envelope>";
 
 sub testids_request {
- return SocketCalls::invoke_soap_request($_[0], $_[1], $testids_request_message, $testids_action);
+ return SocketCalls::invoke_soap_request($_[0], $_[1], $testids_request_message, $testids_action, $_[2]);
 }

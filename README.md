@@ -1,6 +1,6 @@
 Install Switch & UPnP Perl module before using the script:
 ----------------------------------------------
-sudo apt-get install libswitch-perl libnet-upnp-perl
+sudo apt-get install libswitch-perl libnet-upnp-perl libxml-libxml-perl
 
 Running the script:
 -------------------
