@@ -51,7 +51,7 @@ while( select($reader_output = $reader_input, undef, undef, 10) ) {
         my $post_response = $http_request->post($host_address, $host_port, "GET", $dev_path, "", "");
 
         my $post_content = $post_response->getcontent();
-print "$post_content";
+        #print "$post_content";
         my $dev = Net::UPnP::Device->new();
         $dev->setssdp($ssdp_response);
         $dev->setdescription($post_content);
@@ -64,7 +64,7 @@ close(SSDP_SOCK);
 
 # Multiple arrays cannot be passed by value., If passed then all the values will be dumped into the first array
 # So return the array references. And also use my qualifier, so that a new instance will be created where it is assigned.
-return (	\@device_list, \@device_addr, \@device_port);
+return ( \@device_list, \@device_addr, \@device_port);
 }
 
 1;

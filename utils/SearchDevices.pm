@@ -45,7 +45,15 @@ sub lookup_diage_device {
     $devNum= 0;
     my (@temp_device_list, @temp_device_ip, @temp_device_port, @temp_scpd_url)= ();
     foreach my $dev_temp (@$device_list_search) {
-        unless ($dev_temp->getservicebyname('urn:schemas-upnp-org:service:BasicManagement:2')) {
+		my @service_list = $dev_temp->getservicelist();
+		my $diage_present='false';
+		foreach $service_temp (@service_list) {
+			if ($service_temp->getserviceid() eq 'urn:upnp-org:serviceId:BasicManagement') {
+				$diage_present='true';
+			}
+		}
+
+        if ($diage_present eq 'false') {
             $devNum++;
             next;
         }
@@ -55,10 +63,9 @@ sub lookup_diage_device {
 		my @nodes = $doc->getElementsByTagName("service");
 		foreach my $node (@nodes) {		
 			if ($node->hasChildNodes()){
-				print "Before serviceType";
-				if ($node->getChildrenByTagName( "serviceType" ) eq 'urn:schemas-upnp-org:service:BasicManagement:2') {
+				my $service_no_version=$node->getChildrenByTagName( "serviceType" );
+				if ((substr $service_no_version, 0 , length($service_no_version)-1) eq 'urn:schemas-upnp-org:service:BasicManagement:') {
 				    push (@temp_scpd_url, $node->getChildrenByTagName("controlURL")->string_value());	
-				    print "Before controlURL";
 				}
 			}        
 		}
