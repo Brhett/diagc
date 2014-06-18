@@ -10,11 +10,7 @@ use Net::UPnP::HTTP;
 use Net::UPnP::Device;
 
 sub search {
-my $ssdp_header = "M-SEARCH * HTTP/1.1\r\n
-ST: upnp:rootdevice\r\n
-Man: \"ssdp:discover\"\r\n
-MX: 5\r\n
-Host: $Net::UPnP::SSDP_ADDR:$Net::UPnP::SSDP_PORT\r\n\r\n";
+my $ssdp_header = "M-SEARCH * HTTP/1.1\r\nST: upnp:rootdevice\r\nMX: 5\r\nMAN: \"ssdp:discover\"\r\nHOST: $Net::UPnP::SSDP_ADDR:$Net::UPnP::SSDP_PORT\r\nContent-Length: 0\r\n\r\n";
 
 print "******************** SSDP Message ********************\n";
 print $ssdp_header;
