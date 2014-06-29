@@ -41,6 +41,7 @@ sub invoke_soap_request {
     my $post_url = $SoapHeaders::http_prefix . $_[0] . $SoapHeaders::separator . $_[1] . $_[4];
     #print $post_url;
     my $user_agent = LWP::UserAgent->new();
+    $user_agent->agent($user_agent->_agent . ' DLNADOC/1.50');
     my $soap_request = HTTP::Request->new(POST => $post_url);
     $soap_request->header(SOAPAction => $_[3]);
     $soap_request->content($_[2]);
