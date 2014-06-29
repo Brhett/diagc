@@ -71,7 +71,7 @@ while( select($reader_output = $reader_input, undef, undef, 10) ) {
             while (<$fh>) {
               my $replace_str = $_;
               $replace_str =~ s/^([0-9]+)\r\n//;
-              print $replace_str;
+              #print $replace_str;
               $chunked_content .= $replace_str;
             }
             $chunked_content =~ s/\r\n//g;
