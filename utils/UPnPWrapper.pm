@@ -52,38 +52,56 @@ while( select($reader_output = $reader_input, undef, undef, 10) ) {
         my $host_port = $2;
         my $dev_path = '/' . $3;
 
-        my $http_request = Net::UPnP::HTTP->new();
+        # Using LWP::UserAgent reduces up the response time
         print "Waiting for SSDP response..... \n\n";
-        my $post_response = $http_request->post($host_address, $host_port, "GET", $dev_path, "", "");
+        my $get_url = $SoapHeaders::http_prefix . $host_address . $SoapHeaders::separator . $host_port . $dev_path;
+        my $user_agent = LWP::UserAgent->new();
+        my $get_request = HTTP::Request->new(GET => $get_url);
+        $get_request->protocol('HTTP/1.1');
 
-        my $post_content = $post_response->getcontent();
-        #print $post_content;
+        my $get_response = $user_agent->request($get_request);
+        my $get_content = $get_response->content;
+        print $get_content;
+
+        # Keeping this in here for now. But the performance using HTTP:Request is slow.
+        #my $http_request = Net::UPnP::HTTP->new();
+        #print "Waiting for SSDP response..... \n\n";
+        #my $post_response = $http_request->post($host_address, $host_port, "GET", $dev_path, "", "");
+
+        #my $get_content = $post_response->getcontent();
+        #print $get_content;
 
         my $dev = Net::UPnP::Device->new();
         $dev->setssdp($ssdp_response);
 
-        # Handle Chunked response from server.
-        if (index(lc($post_content),"transfer-encoding: chunked") != -1) {
-            $post_content = substr($post_content,index($post_content,"<?xml version=\"1.0\" encoding=\"utf-8\" ?>") ,length($post_content));
+        # Handle Chunked response from server in a traditional way.
+        # If not using LWP::UserAgent, chunked responses will be handled this way.
+        if (index(lc($get_content),"transfer-encoding: chunked") != -1) {
+            $get_content = substr($get_content,index($get_content,"<?xml version=\"1.0\"") ,length($get_content));
+
+            # Open the file to write
             my $filename = 'temp.txt';
-            open(my $fh, '<', $filename) or die "Could not open file '$filename' $!";
+            open(my $fw, '>', $filename) or die "Could not open file '$filename' $!";
+            print $fw $get_content;
+            # Close the file
+            close $fw;
+
+            # Open the file to read
+            open(my $fr, '<', $filename) or die "Could not open file '$filename' $!";
             my $chunked_content;
-            while (<$fh>) {
+            while (<$fr>) {
               my $replace_str = $_;
               $replace_str =~ s/^([0-9]+)\r\n//;
-              #print $replace_str;
+              print $replace_str;
               $chunked_content .= $replace_str;
             }
             $chunked_content =~ s/\r\n//g;
-
             $dev->setdescription($chunked_content);
-
-            # Close and delete the file
-            close $fh;
-            unlink $fh;
+            # Close the file
+            close $fr;
         } else {
             # Non-Chunked response.
-            $dev->setdescription($post_content);
+            $dev->setdescription($get_content);
         }
 
         push(@device_list, $dev);
