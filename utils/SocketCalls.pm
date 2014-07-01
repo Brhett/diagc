@@ -38,7 +38,15 @@ sub invoke_soap_request {
     #print "The passed port no :" . $_[1] . "\n";
     #print "Request Message : " . $_[2] . "\n";
     #print "Soap Action :".$_[3] . "\n";
-    my $post_url = $SoapHeaders::http_prefix . $_[0] . $SoapHeaders::separator . $_[1] . $_[4];
+    my $post_url;
+    #Use absolute URL when available
+    if (substr($_[4],0,7) eq 'http://') {
+        $post_url = $_[4];
+    } else {
+        #Use add host and port for relative URLs
+        $post_url = $SoapHeaders::http_prefix . $_[0] . $SoapHeaders::separator . $_[1] . $_[4];
+    }
+
     #print $post_url;
     my $user_agent = LWP::UserAgent->new();
     $user_agent->agent($user_agent->_agent . ' DLNADOC/1.50');
