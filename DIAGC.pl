@@ -42,20 +42,51 @@ use responsevalidator::ResponseValidator;
 START:
 
 our ($TEST_OPTION, $HOSTIP, $HOSTPORT, $CONTROL_URL) = '';
-
+our ($diage_devices, $device_name, $diage_ip, $diage_port, $control_url);
 print "\33[1;33m------- Choose an option -------\33[m\n";
 print "1. Search DIAGE capable devices \n";
 print "2. Manual DIAGE device testing \n";
-print "3. Exit Application \n";
+print "3. List Searched devices \n";
+print "4. Exit Application \n";
 print "\33[1;33mEnter the option number : \33[m";
 our $SEARCH_OPTS = <>;
 chomp $SEARCH_OPTS;
 
 switch($SEARCH_OPTS){
        case 1          {
-                        my ($diage_devices, $diage_ip, $diage_port, $control_url) = SearchDevices::lookup_diage_device;
+                        ($diage_devices, $device_name, $diage_ip, $diage_port, $control_url) = SearchDevices::lookup_diage_device;
                         print "\33[1;33mChoose the corresponding device number to start testing: \33[m\n";
 
+                        my $device_count=0;
+                        print "****************************************\n";
+                        print "****************************************\n";
+
+                        foreach my $device_temp (@$diage_devices) {
+                            print "----------------------------------------\33[m\n";
+                            print "\33[1;33m[" . ($device_count + 1) . "] : " . @$device_name[$device_count] . "\33[m\n";
+                            print "\33[1;33mDevice IP : " . @$diage_ip[$device_count] . "\33[m\n";
+                            print "\33[1;33mDevice Port : " . @$diage_port[$device_count] . "\33[m\n";
+                            print "\33[1;33mControl URL : " . @$control_url[$device_count] . "\33[m\n";
+                            $device_count++;
+                        }
+
+                        print "****************************************\n";
+                        print "****************************************\n";
+
+                        print "\33[1;33mChoose the device number: \33[m";
+                        my $DEVICE_NO = <>;
+                        chomp $DEVICE_NO;
+
+                        $HOSTIP = @$diage_ip[$DEVICE_NO - 1];
+                        $HOSTPORT = @$diage_port[$DEVICE_NO - 1];
+                        $CONTROL_URL = @$control_url[$DEVICE_NO - 1];
+                        Util::print_diagc_start;
+                       }
+       case 2          {
+                        Util::print_diagc_start;
+                       }
+       case 3          { 
+                        print "\33[1;33mChoose the corresponding device number to start testing: \33[m\n";
                         my $device_count=0;
                         print "****************************************\n";
                         print "****************************************\n";
@@ -81,10 +112,7 @@ switch($SEARCH_OPTS){
                         $CONTROL_URL = @$control_url[$DEVICE_NO - 1];
                         Util::print_diagc_start;
                        }
-       case 2          {
-                        Util::print_diagc_start;
-                       }                       
-       case 3          {
+       case 4          {
                         exit;
                        }
        else            { exit;}  

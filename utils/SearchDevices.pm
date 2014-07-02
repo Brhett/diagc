@@ -29,6 +29,7 @@
 #
 package SearchDevices;
 
+
 use utils::UPnPWrapper;
 use Net::UPnP::Device;
 use Net::UPnP::ControlPoint;
@@ -43,37 +44,58 @@ sub search_devices {
 sub lookup_diage_device {
     my ($device_list_search, $device_ip_list, $device_port_list) = search_devices;
     $devNum= 0;
-    my (@temp_device_list, @temp_device_ip, @temp_device_port, @temp_scpd_url)= ();
+    my (@temp_device_list, @temp_device_name, @temp_device_ip, @temp_device_port, @temp_scpd_url)= ();
     foreach my $dev_temp (@$device_list_search) {
-		my @service_list = $dev_temp->getservicelist();
-		my $diage_present='false';
-		foreach $service_temp (@service_list) {
-			if ($service_temp->getserviceid() eq 'urn:upnp-org:serviceId:BasicManagement') {
-				$diage_present='true';
-			}
-		}
+        my @service_list = $dev_temp->getservicelist();
+        my $diage_present='false';
+        foreach $service_temp (@service_list) {
+            if ($service_temp->getserviceid() eq 'urn:upnp-org:serviceId:BasicManagement') {
+                $diage_present='true';
+            }
+        }
 
         if ($diage_present eq 'false') {
             $devNum++;
             next;
         }
 
-		my $parser = XML::LibXML->new;
-		$doc = $parser->parse_string($dev_temp->getdescription());
-		my @nodes = $doc->getElementsByTagName("service");
-		foreach my $node (@nodes) {		
-			if ($node->hasChildNodes()){
-				my $service_no_version=$node->getChildrenByTagName( "serviceType" );
-				if ((substr $service_no_version, 0 , length($service_no_version)-1) eq 'urn:schemas-upnp-org:service:BasicManagement:') {
-				    push (@temp_scpd_url, $node->getChildrenByTagName("controlURL")->string_value());	
-				}
-			}        
-		}
+        my $parser = XML::LibXML->new;
+        my $doc = $parser->parse_string($dev_temp->getdescription());
+        my $root = $doc->documentElement();
+        my @embedded_devices = $root->getElementsByTagName("device");
 
-        push (@temp_device_list , $dev_temp);
-        push (@temp_device_ip, @$device_ip_list[$devNum]);
-        push (@temp_device_port, @$device_port_list[$devNum]);
-        
+        my $device_num =0;
+        foreach my $temp_embedded_devices (@embedded_devices) {
+            my @service_list=$temp_embedded_devices->getChildrenByTagName('serviceList');
+            foreach my $temp_service_list (@service_list) {
+                my @services = $temp_service_list->getChildrenByTagName("service");
+                foreach my $temp_services (@services) {
+                    if ($temp_services->hasChildNodes()){
+                        my $service_no_version=$temp_services->getChildrenByTagName( "serviceType" );
+                        if ((substr $service_no_version, 0 , length($service_no_version)-1) eq 'urn:schemas-upnp-org:service:BasicManagement:') {
+                            if ($device_num > 0) {
+                                # Create new Embedded devices
+                                my $dev = Net::UPnP::Device->new();
+                                # TODO: Add only the embedded device description
+                                $dev->setdescription($dev_temp->getdescription());
+                                push (@temp_device_list , $dev);
+                                push (@temp_device_name, 'Embedded');
+                            } else {
+                                # Add the root device
+                                push (@temp_device_list , $dev_temp);
+                                push (@temp_device_name, $dev_temp->getfriendlyname());
+                            }
+
+                            push (@temp_device_ip, @$device_ip_list[$devNum]);
+                            push (@temp_device_port, @$device_port_list[$devNum]);
+                            push (@temp_scpd_url, $temp_services->getChildrenByTagName("controlURL")->string_value());
+                        }
+                    }
+                }
+            }
+            $device_num++;
+         }
+
         #print "[" . ($devNum + 1) . "] : " . $dev_temp->getfriendlyname() . "\n";
         #print "Device IP : " . @$device_ip_list[$devNum] . "\n";
         #print "Device Port : " . @$device_port_list[$devNum] . "\n";
@@ -81,7 +103,7 @@ sub lookup_diage_device {
     }
     print "\33[1;36mDevices with DIAGE capability: " . @temp_device_list . "\33[m\n";
     #print "DIAGC Control URL: " . "@temp_scpd_url" . "\n";
-    return (\@temp_device_list, \@temp_device_ip, \@temp_device_port, \@temp_scpd_url);
+    return (\@temp_device_list, \@temp_device_name, \@temp_device_ip, \@temp_device_port, \@temp_scpd_url);
 }
 
 1;

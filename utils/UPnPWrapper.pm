@@ -61,7 +61,7 @@ while( select($reader_output = $reader_input, undef, undef, 10) ) {
 
         my $get_response = $user_agent->request($get_request);
         my $get_content = $get_response->content;
-        print $get_content;
+        # print $get_content;
 
         # Keeping this in here for now. But the performance using HTTP:Request is slow.
         #my $http_request = Net::UPnP::HTTP->new();
