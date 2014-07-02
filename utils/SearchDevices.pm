@@ -63,6 +63,8 @@ sub lookup_diage_device {
         my $doc = $parser->parse_string($dev_temp->getdescription());
         my $root = $doc->documentElement();
         my @embedded_devices = $root->getElementsByTagName("device");
+        # Extract the URLBase if available and perfix it to the controlURL
+        my @base_url = $dev_temp->getdescription() =~ m/<URLBase>(.*)<\/URLBase>/g;
 
         my $device_num =0;
         foreach my $temp_embedded_devices (@embedded_devices) {
@@ -88,7 +90,12 @@ sub lookup_diage_device {
 
                             push (@temp_device_ip, @$device_ip_list[$devNum]);
                             push (@temp_device_port, @$device_port_list[$devNum]);
-                            push (@temp_scpd_url, $temp_services->getChildrenByTagName("controlURL")->string_value());
+
+                            if ("@base_url" eq '') {
+                                push (@temp_scpd_url, $temp_services->getChildrenByTagName("controlURL")->string_value());
+                            } else {
+                                push (@temp_scpd_url,"@base_url" . $temp_services->getChildrenByTagName("controlURL")->string_value());
+                            }
                         }
                     }
                 }
