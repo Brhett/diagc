@@ -81,7 +81,7 @@ sub lookup_diage_device {
                                 # TODO: Add only the embedded device description
                                 $dev->setdescription($dev_temp->getdescription());
                                 push (@temp_device_list , $dev);
-                                push (@temp_device_name, 'Embedded');
+                                push (@temp_device_name, 'Embedded-' . $device_num);
                             } else {
                                 # Add the root device
                                 push (@temp_device_list , $dev_temp);

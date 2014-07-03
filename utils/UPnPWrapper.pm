@@ -9,11 +9,11 @@ use Net::UPnP;
 use Net::UPnP::HTTP;
 use Net::UPnP::Device;
 
-sub search {
-# Few clients don't understand the HOST header.
-#my $ssdp_header = "M-SEARCH * HTTP/1.1\r\nST: upnp:rootdevice\r\nMan: \"ssdp:discover\"\r\nMX: 5\r\nHost: $Net::UPnP::SSDP_ADDR:$Net::UPnP::SSDP_PORT\r\n\r\n";
+use threads;
 
-my $ssdp_header = "M-SEARCH * HTTP/1.1\r\nST: upnp:rootdevice\r\nMan: \"ssdp:discover\"\r\nMX: 5\r\n\r\n";
+my $ssdp_multicast_msg = sockaddr_in($Net::UPnP::SSDP_PORT, inet_aton($Net::UPnP::SSDP_ADDR));
+my $ssdp_header = "M-SEARCH * HTTP/1.1\r\nHOST: $Net::UPnP::SSDP_ADDR:$Net::UPnP::SSDP_PORT\r\nMAN: \"ssdp:discover\"\r\nMX: 5\r\nST: upnp:rootdevice\r\n\r\n";
+#my $ssdp_header = "M-SEARCH * HTTP/1.1\r\nST: upnp:rootdevice\r\nMan: \"ssdp:discover\"\r\nMX: 5\r\nHost: $Net::UPnP::SSDP_ADDR:$Net::UPnP::SSDP_PORT\r\n\r\n";
 
 # The below format fails in some clients. But keeping it for now.
 #my $ssdp_header = "M-SEARCH * HTTP/1.1\r\n
@@ -22,13 +22,29 @@ my $ssdp_header = "M-SEARCH * HTTP/1.1\r\nST: upnp:rootdevice\r\nMan: \"ssdp:dis
 #MX: 5\r\n
 #Host: $Net::UPnP::SSDP_ADDR:$Net::UPnP::SSDP_PORT\r\n\r\n";
 
+
+sub sendThread {
+	socket(SSDP_SOCK, AF_INET, SOCK_DGRAM, getprotobyname('udp'));
+	send(SSDP_SOCK, $ssdp_header, 0, $ssdp_multicast_msg);
+}
+
+sub search {
+# Few clients don't understand the HOST header.
+
 print "******************** SSDP Message ********************\n";
 print $ssdp_header;
 print "******************** SSDP Message ********************\n";
 
+# Count 1 : Send out SSDP message
 socket(SSDP_SOCK, AF_INET, SOCK_DGRAM, getprotobyname('udp'));
-my $ssdp_multicast_msg = sockaddr_in($Net::UPnP::SSDP_PORT, inet_aton($Net::UPnP::SSDP_ADDR));
 send(SSDP_SOCK, $ssdp_header, 0, $ssdp_multicast_msg);
+
+# Count 9 : Due to the unreliable nature of UDP,
+#           control points should send each M-SEARCH message more than once,
+#           not to exceed 10 M-SEARCH requests in a 200 ms period.
+for (my $count = 1; $count <= 9; $count++) {
+        threads->new(\&sendThread, $count);
+}
 
 my @device_list=();
 my @device_addr=();
@@ -52,18 +68,18 @@ while( select($reader_output = $reader_input, undef, undef, 10) ) {
         my $host_port = $2;
         my $dev_path = '/' . $3;
 
-        # Using LWP::UserAgent reduces up the response time
+        # Using LWP::UserAgent improves the response time
         print "Waiting for SSDP response..... \n\n";
         my $get_url = $SoapHeaders::http_prefix . $host_address . $SoapHeaders::separator . $host_port . $dev_path;
         my $user_agent = LWP::UserAgent->new();
+
         my $get_request = HTTP::Request->new(GET => $get_url);
         $get_request->protocol('HTTP/1.1');
-
         my $get_response = $user_agent->request($get_request);
         my $get_content = $get_response->content;
         # print $get_content;
 
-        # Keeping this in here for now. But the performance using HTTP:Request is slow.
+        # Keeping this in here for now. The performance of below code using plain HTTP:Request is slow.
         #my $http_request = Net::UPnP::HTTP->new();
         #print "Waiting for SSDP response..... \n\n";
         #my $post_response = $http_request->post($host_address, $host_port, "GET", $dev_path, "", "");
