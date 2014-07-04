@@ -24,8 +24,8 @@ my $ssdp_header = "M-SEARCH * HTTP/1.1\r\nHOST: $Net::UPnP::SSDP_ADDR:$Net::UPnP
 
 
 sub sendThread {
-	socket(SSDP_SOCK, AF_INET, SOCK_DGRAM, getprotobyname('udp'));
-	send(SSDP_SOCK, $ssdp_header, 0, $ssdp_multicast_msg);
+    socket(SSDP_SOCK, AF_INET, SOCK_DGRAM, getprotobyname('udp'));
+    send(SSDP_SOCK, $ssdp_header, 0, $ssdp_multicast_msg);
 }
 
 sub search {
@@ -71,12 +71,19 @@ while( select($reader_output = $reader_input, undef, undef, 10) ) {
         # Using LWP::UserAgent improves the response time
         print "Waiting for SSDP response..... \n\n";
         my $get_url = $SoapHeaders::http_prefix . $host_address . $SoapHeaders::separator . $host_port . $dev_path;
-        my $user_agent = LWP::UserAgent->new();
+        my $user_agent = LWP::UserAgent->new(keep_alive => 1);
 
         my $get_request = HTTP::Request->new(GET => $get_url);
         $get_request->protocol('HTTP/1.1');
         my $get_response = $user_agent->request($get_request);
-        my $get_content = $get_response->content;
+        my $get_content;
+        if ( index($get_response->as_string, "154 Continue") != -1) {
+            # Fall back to curl since LWP does not have support for 154 Continue
+            $get_content = `curl $get_url`;
+        } else {
+            $get_content = $get_response->content;
+        }
+
         # print $get_content;
 
         # Keeping this in here for now. The performance of below code using plain HTTP:Request is slow.
