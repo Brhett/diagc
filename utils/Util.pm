@@ -44,6 +44,9 @@ sub print_diagc_start {
     print "9. GetNSLookupResult \n";
     print "10. GetPingResult \n";
     print "11. GetTracerouteResult \n";
+    print "12. (AUTO) NSLookup \n";
+    print "13. (AUTO) Ping \n";
+    print "14. (AUTO) Traceroute \n";
     print "x - Exit to main menu \n";
     print " ---------------------\n";
 }

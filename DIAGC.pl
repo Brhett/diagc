@@ -195,6 +195,39 @@ GET_USER_OPT:
                         my $traceroute_res_response = TracerouteResponse::traceroute_response($HOSTIP, $HOSTPORT, $TESTID_INFO, $CONTROL_URL);
                         ResponseValidator::valiate_soap_response($traceroute_res_response);
                        }
+       case 12         {
+                        print "(AUTO)Enter the HostName to perform NSLookup : ";
+                        my $HOST_NAME = <>;
+                        chomp $HOST_NAME;
+                        my $nslookup_req_response = NSLookUpRequest::nslookup_request($HOSTIP, $HOSTPORT, $HOST_NAME, $CONTROL_URL);
+                        my $nslookup_response = ResponseValidator::valiate_soap_response($nslookup_req_response);
+                        my $test_id_response = ResponseValidator::get_test_id_from_response($nslookup_response);
+                        sleep(2);
+                        my $nslookup_res_response = NSLookUpResponse::nslookup_response($HOSTIP, $HOSTPORT, $test_id_response, $CONTROL_URL);
+                        ResponseValidator::valiate_soap_response($nslookup_res_response);
+                       }
+       case 13         {
+                        print "(AUTO)Enter the HostName to perform Ping : ";
+                        my $HOST_NAME = <>;
+                        chomp $HOST_NAME;
+                        my $ping_req_response = PingRequest::ping_request($HOSTIP, $HOSTPORT, $HOST_NAME, $CONTROL_URL);
+                        my $ping_response = ResponseValidator::valiate_soap_response($ping_req_response);
+                        my $test_id_response = ResponseValidator::get_test_id_from_response($ping_response);
+                        sleep(2);
+                        my $ping_res_response = PingResponse::ping_response($HOSTIP, $HOSTPORT, $test_id_response, $CONTROL_URL);
+                        ResponseValidator::valiate_soap_response($ping_res_response);
+                       }
+       case 14         {
+                        print "(AUTO)Enter the HostName to perform traceroute : ";
+                        my $HOST_NAME = <>;
+                        chomp $HOST_NAME;
+                        my $traceroute_req_request = TracerouteRequest::traceroute_request($HOSTIP, $HOSTPORT, $HOST_NAME, $CONTROL_URL);
+                        my $traceroute_response = ResponseValidator::valiate_soap_response($traceroute_req_request);
+                        my $test_id_response = ResponseValidator::get_test_id_from_response($traceroute_response);
+                        sleep(2);
+                        my $traceroute_res_response = TracerouteResponse::traceroute_response($HOSTIP, $HOSTPORT, $test_id_response, $CONTROL_URL);
+                        ResponseValidator::valiate_soap_response($traceroute_res_response);
+                       }
        case ('x')      { goto START; }
        else            { goto GET_USER_OPT; }
     }

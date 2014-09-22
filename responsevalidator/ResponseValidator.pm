@@ -40,6 +40,7 @@ sub valiate_soap_response {
         print_message ($soap_response);
     }
     print "\n************End of Action*************\n";
+    return $soap_response->content;
 }
 
 sub print_message {
@@ -50,6 +51,14 @@ sub print_message {
         print "Response Body: \n";
         print "--------------\n";
         print $_[0]->content . "\n";
+}
+
+sub get_test_id_from_response {
+    my $reponse_string = $_[0];
+    #print "GOT RESPONSE: $reponse_string \n";
+    my $test_id = substr $reponse_string, index($reponse_string,"<TestID>") + length("<TestID>"), index($reponse_string,"</TestID>");
+    my @test_id = $reponse_string =~ m/<TestID>(.*)<\/TestID>/g;
+    return "@test_id";
 }
 
 1;
