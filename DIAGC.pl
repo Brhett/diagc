@@ -55,6 +55,10 @@ chomp $SEARCH_OPTS;
 switch($SEARCH_OPTS){
        case 1          {
                         ($diage_devices, $device_name, $diage_ip, $diage_port, $control_url) = SearchDevices::lookup_diage_device;
+                        if (@$diage_devices == 0) {
+                            goto START;
+                        }
+
                         print "\33[1;33mChoose the corresponding device number to start testing: \33[m\n";
 
                         my $device_count=0;
