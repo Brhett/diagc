@@ -46,7 +46,14 @@ sub lookup_diage_device {
     $devNum= 0;
     my (@temp_device_list, @temp_device_name, @temp_device_ip, @temp_device_port, @temp_scpd_url)= ();
     foreach my $dev_temp (@$device_list_search) {
-        my @service_list = $dev_temp->getservicelist();
+        my @service_list = ();
+        eval {@service_list = $dev_temp->getservicelist();};
+        if ($@) {
+            $devNum++;
+            next;
+        } else {
+            @service_list = $dev_temp->getservicelist();
+        }
         my $diage_present='false';
         foreach $service_temp (@service_list) {
             if ($service_temp->getserviceid() eq 'urn:upnp-org:serviceId:BasicManagement') {
