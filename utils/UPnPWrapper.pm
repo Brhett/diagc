@@ -71,6 +71,15 @@ while( select($reader_output = $reader_input, undef, undef, 10) ) {
         # Using LWP::UserAgent improves the response time
         print "Waiting for SSDP response..... \n\n";
         my $get_url = $SoapHeaders::http_prefix . $host_address . $SoapHeaders::separator . $host_port . $dev_path;
+        my $found = 'false';
+        foreach my $device_tmp (@device_list) {
+            if ($get_url eq $device_tmp->getlocation()) {
+                $found = 'true';
+                last;
+            }
+        }
+        next if ($found eq 'true');
+
         my $user_agent = LWP::UserAgent->new(keep_alive => 1);
 
         my $get_request = HTTP::Request->new(GET => $get_url);
