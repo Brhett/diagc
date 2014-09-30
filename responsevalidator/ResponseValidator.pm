@@ -56,9 +56,13 @@ sub print_message {
 sub get_test_id_from_response {
     my $reponse_string = $_[0];
     #print "GOT RESPONSE: $reponse_string \n";
-    my $test_id = substr $reponse_string, index($reponse_string,"<TestID>") + length("<TestID>"), index($reponse_string,"</TestID>");
     my @test_id = $reponse_string =~ m/<TestID>(.*)<\/TestID>/g;
     return "@test_id";
+}
+
+sub is_test_ongoing_from_response {
+    my $reponse_string = $_[0];
+    return $reponse_string =~ m/<State>InProgress<\/State>/g;
 }
 
 1;

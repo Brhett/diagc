@@ -206,7 +206,12 @@ GET_USER_OPT:
                         my $nslookup_req_response = NSLookUpRequest::nslookup_request($HOSTIP, $HOSTPORT, $HOST_NAME, $CONTROL_URL);
                         my $nslookup_response = ResponseValidator::valiate_soap_response($nslookup_req_response);
                         my $test_id_response = ResponseValidator::get_test_id_from_response($nslookup_response);
-                        sleep(2);
+                        while (1) {
+                            my $testinfo_req_response = TestInfoRequest::testinfo_request($HOSTIP, $HOSTPORT, $test_id_response, $CONTROL_URL);
+                            my $testinfo_response = ResponseValidator::valiate_soap_response($testinfo_req_response);
+                            last unless (ResponseValidator::is_test_ongoing_from_response($testinfo_response));
+                            sleep(1);
+                        }
                         my $nslookup_res_response = NSLookUpResponse::nslookup_response($HOSTIP, $HOSTPORT, $test_id_response, $CONTROL_URL);
                         ResponseValidator::valiate_soap_response($nslookup_res_response);
                        }
@@ -217,7 +222,12 @@ GET_USER_OPT:
                         my $ping_req_response = PingRequest::ping_request($HOSTIP, $HOSTPORT, $HOST_NAME, $CONTROL_URL);
                         my $ping_response = ResponseValidator::valiate_soap_response($ping_req_response);
                         my $test_id_response = ResponseValidator::get_test_id_from_response($ping_response);
-                        sleep(2);
+                        while (1) {
+                            my $testinfo_req_response = TestInfoRequest::testinfo_request($HOSTIP, $HOSTPORT, $test_id_response, $CONTROL_URL);
+                            my $testinfo_response = ResponseValidator::valiate_soap_response($testinfo_req_response);
+                            last unless (ResponseValidator::is_test_ongoing_from_response($testinfo_response));
+                            sleep(1);
+                        }
                         my $ping_res_response = PingResponse::ping_response($HOSTIP, $HOSTPORT, $test_id_response, $CONTROL_URL);
                         ResponseValidator::valiate_soap_response($ping_res_response);
                        }
@@ -228,7 +238,12 @@ GET_USER_OPT:
                         my $traceroute_req_request = TracerouteRequest::traceroute_request($HOSTIP, $HOSTPORT, $HOST_NAME, $CONTROL_URL);
                         my $traceroute_response = ResponseValidator::valiate_soap_response($traceroute_req_request);
                         my $test_id_response = ResponseValidator::get_test_id_from_response($traceroute_response);
-                        sleep(2);
+                        while (1) {
+                            my $testinfo_req_response = TestInfoRequest::testinfo_request($HOSTIP, $HOSTPORT, $test_id_response, $CONTROL_URL);
+                            my $testinfo_response = ResponseValidator::valiate_soap_response($testinfo_req_response);
+                            last unless (ResponseValidator::is_test_ongoing_from_response($testinfo_response));
+                            sleep(1);
+                        }
                         my $traceroute_res_response = TracerouteResponse::traceroute_response($HOSTIP, $HOSTPORT, $test_id_response, $CONTROL_URL);
                         ResponseValidator::valiate_soap_response($traceroute_res_response);
                        }
